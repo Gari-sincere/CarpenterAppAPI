@@ -1,0 +1,37 @@
+TypeError: Cannot destructure property 'boardId' of '(intermediate value)' as it is undefined.
+TypeError: Cannot destructure property 'boardId' of '(intermediate value)' as it is undefined.
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+ReferenceError: twilioLib is not defined
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Cannot read properties of undefined (reading 'boardId')
+TypeError: Assignment to constant variable.
+ReferenceError: pb is not defined
+ReferenceError: PocketBase is not defined
+ReferenceError: LOOPMESSAGE_SECRET_KEY is not defined
+ReferenceError: LOOPMESSAGE_SECRET_KEY is not defined
+ReferenceError: sendIMessage is not defined
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+TypeError: client.validateRequest is not a function
+TypeError: Cannot convert undefined or null to object
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+TypeError: Cannot convert undefined or null to object
+TypeError: Cannot read properties of undefined (reading 'host')
+TypeError: ValidationRequestListInstance.get is not a function
+ReferenceError: pb is not defined
+ReferenceError: pb is not defined
+ReferenceError: token is not defined
+ReferenceError: token is not defined
+ReferenceError: token is not defined

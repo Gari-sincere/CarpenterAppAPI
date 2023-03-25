@@ -1,4 +1,4 @@
-const pb = require("./db.js")
+const PocketBase = require('pocketbase/cjs')
 
 /**
  * Creates a record in the 'board' table. See 'board' endpoint swagger for more
@@ -7,7 +7,7 @@ const pb = require("./db.js")
  * @param {*} moderated 
  * @returns 
  */
-async function createBoard(ownerId, type, moderated) {
+async function createBoard(token, ownerId, type, moderated) {
 
     // example create data
     const data = {
@@ -16,7 +16,16 @@ async function createBoard(ownerId, type, moderated) {
         "moderated": moderated
     }
 
-    const record = await pb.collection('board').create(data)
+    const response = await fetch(process.env.DATABASE_URL + '/api/collections/board/records', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${token}`
+        },
+        body: JSON.stringify(data)
+    })
+
+    console.log("response", response)
 
     return record
 }

@@ -1,4 +1,4 @@
-const pb = require("./db.js")
+const PocketBase = require('pocketbase/cjs')
 const twilioLib = require("../services/twilioFunctions.js")
 const _ = require("underscore")
 
@@ -10,7 +10,7 @@ const _ = require("underscore")
 async function getUsedPhones(userId) {
     // you can also fetch all records at once via getFullList
 
-    const records = await pb.collection('usersBoard').getFullList(1000000, { filter: 'userId="' + userId + '"' })
+    const records = await pb.collection('usersBoard').getFullList(1000000, { filter: 'userId="' + userId + '" && active=True' })
 
     const phonesUsed = _.pluck(records, 'phoneUsed')
 
@@ -23,7 +23,13 @@ async function getUsedPhones(userId) {
  * @param {*} userId 
  * @returns 
  */
-async function addUserToBoard(boardId, userId) {
+async function addUserToBoard(token, boardId, userId) {
+
+    const pb = new PocketBase(process.env.DATABASE_URL)
+
+    pb.authStore = {
+        baseToken: token
+    }
 
     let allPhones = await twilioLib.getAllPhones()
     let phonesUsed = await getUsedPhones(userId)
@@ -40,7 +46,8 @@ async function addUserToBoard(boardId, userId) {
         "userId": userId,
         "boardId": boardId,
         "phoneUsed": boardPhone,
-        "emailUsed": ""
+        "emailUsed": "",
+        "active": true
     }
 
     const record = await pb.collection('usersBoard').create(data)
@@ -48,4 +55,34 @@ async function addUserToBoard(boardId, userId) {
     return record
 }
 
-module.exports = { addUserToBoard }
+/**
+ * Creates a record in the 'usersBoard' table. See 'board' endpoint swagger for more
+ * @param {*} boardId 
+ * @param {*} userId 
+ * @returns 
+ */
+async function removeUserFromBoard(token, boardId, userId) {
+
+    const pb = new PocketBase(process.env.DATABASE_URL)
+
+    pb.authStore = {
+        baseToken: token
+    }
+
+    const startingRecord = await pb.collection('usersBoard').getFirstListItem('userId="' + userId + '" && boardId=' + boardId)
+
+    // example update data
+    const data = {
+        "userId": startingRecord.userId,
+        "boardId": startingRecord.boardId,
+        "phoneUsed": startingRecord.phoneUsed,
+        "emailUsed": startingRecord.emailUsed,
+        "active": false
+    };
+
+    const newRecord = await pb.collection('usersBoard').update(startingRecord.id, data);
+
+    return newRecord
+}
+
+module.exports = { addUserToBoard, removeUserFromBoard }

@@ -1,4 +1,4 @@
-const pb = require("./db.js")
+const PocketBase = require('pocketbase/cjs')
 
 /**
  * Creates a record in the 'post' table. See 'board' endpoint swagger for more
@@ -7,7 +7,13 @@ const pb = require("./db.js")
  * @param {*} post 
  * @returns 
  */
-async function addPost(boardId, userId, post) {
+async function addPost(token, boardId, userId, post) {
+
+    const pb = new PocketBase(process.env.DATABASE_URL)
+
+    pb.authStore = {
+        baseToken: token
+    }
 
     let userOwnsBoard
 

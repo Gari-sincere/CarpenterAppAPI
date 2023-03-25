@@ -66,10 +66,11 @@ const router = express.Router()
 *         description: Some error happened
 */
 
-router.post("/", function (req, res) {
+router.post("/", async function (req, res) {
+    const token = req.headers.authorization
     const { email, phone, firstName, lastName, nickName, chatChannel } = req.body;
 
-    createUser(email, phone, firstName, lastName, nickName, chatChannel).then(() => {
+    createUser(token, email, phone, firstName, lastName, nickName, chatChannel).then(() => {
         res.sendStatus(201)
     })
 })

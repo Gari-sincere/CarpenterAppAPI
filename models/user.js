@@ -1,4 +1,4 @@
-const pb = require("./db.js")
+const PocketBase = require('pocketbase/cjs')
 const _ = require("underscore")
 
 /**
@@ -10,7 +10,13 @@ const _ = require("underscore")
  * @param {*} nickName 
  * @param {*} chatChannel 
  */
-async function createUser(email, phone, firstName, lastName, nickName, chatChannel) {
+async function createUser(token, email, phone, firstName, lastName, nickName, chatChannel) {
+
+    const pb = new PocketBase(process.env.DATABASE_URL)
+
+    pb.authStore = {
+        baseToken: token
+    }
 
     // example create data
     const data = {
@@ -32,4 +38,19 @@ async function createUser(email, phone, firstName, lastName, nickName, chatChann
     return record
 }
 
-module.exports = { createUser }
+async function start2Factor(userPhoneNum) {
+    const pb = new PocketBase(process.env.DATABASE_URL)
+
+    pb.admins.authWithPassword(process.env.DATABASE_USER, process.env.DATABASE_PASS)
+
+    const stuff = await pb.collection('users').requestPasswordReset('garison.cyr@gmail.com');
+
+    console.log("stuff", stuff)
+
+}
+
+async function login() {
+
+}
+
+module.exports = { createUser, start2Factor }

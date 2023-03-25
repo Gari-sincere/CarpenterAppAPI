@@ -56,9 +56,13 @@ const router = express.Router()
 */
 
 router.post("/", function (req, res) {
+    const token = req.headers.authorization
+
+    console.log("token", token)
+
     const { ownerId, type, moderated } = req.body;
 
-    createBoard(ownerId, type, moderated).then(() => {
+    createBoard(token, ownerId, type, moderated).then(() => {
         res.sendStatus(201)
     })
 })
@@ -93,13 +97,15 @@ router.post("/", function (req, res) {
 *         description: Some error happened
 */
 
-router.post("/:boardId/addUser/:userId", function (req, res) {
+router.post("/:boardId/addUser/:userId", async function (req, res) {
+    const token = req.headers.authorization
     const boardId = req.params.boardId;
     const userId = req.params.userId;
 
-    addUserToBoard(boardId, userId)
-        .then(() => {
-            res.sendStatus(201)
+    addUserToBoard(token, boardId, userId)
+        .then((newUsersBoardRecord) => {
+            util.sendBoardWelcomeText(token, newUsersBoardRecord)
+            res.sendStatus(200)
         })
         .catch((error) => {
             console.error(error)
@@ -155,14 +161,15 @@ router.post("/:boardId/addUser/:userId", function (req, res) {
 *         description: Some error happened
 */
 
-router.post("/:boardId/post", function (req, res) {
+router.post("/:boardId/post", async function (req, res) {
+    const token = req.headers.authorization
     const boardId = req.params.boardId;
     const userId = req.body.userId
     const post = req.body.post
 
-    addPost(boardId, userId, post)
+    addPost(token, boardId, userId, post)
         .then((postRecord) => {
-            util.notifyBulletinBoardMembers(boardId, postRecord)
+            util.notifyBulletinBoardMembers(token, boardId, postRecord)
             res.sendStatus(200)
         })
         .catch((error) => {
@@ -217,13 +224,14 @@ router.post("/:boardId/post", function (req, res) {
 *         description: Some error happened
 */
 
-router.post("/:boardId/message", function (req, res) {
+router.post("/:boardId/message", async function (req, res) {
+    const token = req.headers.authorization
     const boardId = req.params.boardId;
     const { userId, message } = req.body;
 
-    addMessage(boardId, userId, message)
+    addMessage(token, boardId, userId, "web", undefined, message)
         .then((messageRecord) => {
-            util.notifyMessageBoardMembers(boardId, messageRecord)
+            util.notifyMessageBoardMembers(token, boardId, messageRecord)
             res.sendStatus(200)
         })
         .catch((error) => {

@@ -1,4 +1,3 @@
-const pb = require("../models/db.js")
 const _ = require("underscore")
 
 const client = require('twilio')(
@@ -6,13 +5,21 @@ const client = require('twilio')(
     process.env.TWILIO_AUTH_TOKEN
 )
 
-async function sendMessage(from, to, message) {
-    return client.messages.create({
+async function sendSMSMessage(from, to, message) {
+    let mediaUrls = message.match(/(https\:\/\/api\.twilio\.com\/[^ ]+|https\:\/\/firebasestorage\.googleapis\.com[^ ]+|https\:\/\/s3-external-1\.amazonaws\.com[^ ]+)/g)
+    message = message.replace(/(https\:\/\/api\.twilio\.com\/[^ ]+ *|https\:\/\/firebasestorage\.googleapis\.com[^ ]+ *|https\:\/\/s3-external-1\.amazonaws\.com[^ ]+ *)/g, '')
+
+    let messageObj = {
         to: to,
         from: from,
         body: message,
-        statusCallback: 'https://6a81-98-114-241-45.ngrok.io/sms/confirm',
-    })
+        statusCallback: `${process.env.PUBLIC_ENDPOINT}/sms/status`,
+    }
+
+    if (mediaUrls && mediaUrls.length > 0)
+        messageObj.mediaUrl = mediaUrls
+
+    return client.messages.create(messageObj)
 }
 
 async function getAllPhones() {
@@ -27,4 +34,14 @@ async function getAllPhones() {
     return formatedPhoneNumbers
 }
 
-module.exports = { sendMessage, getAllPhones }
+//Couldn't get this to work. Leaving for now
+// function isRequestFromTwilio(req) {
+//     const twilioSignature = req.headers['x-twilio-signature']
+//     const authToken = process.env.TWILIO_AUTH_TOKEN
+//     const url = req.headers['x-forwarded-proto'] + "://" + req.headers.host + "/sms/status"
+//     const params = req.body
+
+//     return require('twilio').validateRequest(authToken, twilioSignature, url, params)
+// }
+
+module.exports = { sendSMSMessage, getAllPhones }
